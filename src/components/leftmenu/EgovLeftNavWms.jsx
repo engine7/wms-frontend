@@ -12,7 +12,7 @@ function EgovLeftNavWms() {
               to={URL.WMS_INVENTORY}
               className={({ isActive }) => (isActive ? "cur" : "")}
             >
-              재고조회
+              재고 &gt; 재고조회
             </NavLink>
           </li>
         </ul>

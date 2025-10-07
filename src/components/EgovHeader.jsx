@@ -112,6 +112,17 @@ function EgovHeader() {
             {sessionUserSe === "ADM" && (
               <li>
                 <NavLink
+                  to={URL.WMS}
+                  className={({ isActive }) => (isActive ? "cur" : "")}
+                >
+                  WMS
+                </NavLink>
+              </li>
+            )}
+
+            {sessionUserSe === "ADM" && (
+              <li>
+                <NavLink
                   to={URL.INFORM}
                   className={({ isActive }) => (isActive ? "cur" : "")}
                 >
@@ -127,17 +138,6 @@ function EgovHeader() {
                   className={({ isActive }) => (isActive ? "cur" : "")}
                 >
                   사이트관리
-                </NavLink>
-              </li>
-            )}
-
-            {sessionUserSe === "ADM" && (
-              <li>
-                <NavLink
-                  to={URL.WMS}
-                  className={({ isActive }) => (isActive ? "cur" : "")}
-                >
-                  WMS
                 </NavLink>
               </li>
             )}
