@@ -461,6 +461,187 @@ function InventoryEdit(props) {
                 </dd>
               </dl>
 
+              {/* 수량 */}
+              <dl>
+                <dt>
+                  <label htmlFor="invnQty">재고수량</label>
+                </dt>
+                <dd>
+                  {/* 등록 일때 변경 가능 */}
+                  {modeInfo.mode === CODE.MODE_CREATE && (
+                    <>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="invnQty"
+                        title=""
+                        id="invnQty"
+                        placeholder=""
+                        defaultValue={inventoryDetail.invnQty}
+                        onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            invnQty: e.target.value,
+                          })
+                        }
+                        ref={(el) => (checkRef.current[0] = el)}
+                        required
+                      />
+                    </>
+                  )}
+                  {/* 수정/조회 일때 변경 불가 */}
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+                    <input
+                      className="f_input2 w_full"
+                      type="text"
+                      name="invnQty"
+                      title=""
+                      id="invnQty"
+                      placeholder=""
+                      defaultValue={inventoryDetail.invnQty}
+                      ref={(el) => (checkRef.current[0] = el)}
+                      readOnly
+                      required
+                    />
+                  )}
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>
+                  <label htmlFor="avlbQty">가용수량</label>
+                </dt>
+                <dd>
+                  {/* 등록 일때 변경 가능 */}
+                  {modeInfo.mode === CODE.MODE_CREATE && (
+                    <>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="avlbQty"
+                        title=""
+                        id="avlbQty"
+                        placeholder=""
+                        defaultValue={inventoryDetail.avlbQty}
+                        onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            avlbQty: e.target.value,
+                          })
+                        }
+                        ref={(el) => (checkRef.current[0] = el)}
+                        required
+                      />
+                    </>
+                  )}
+                  {/* 수정/조회 일때 변경 불가 */}
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+                    <input
+                      className="f_input2 w_full"
+                      type="text"
+                      name="avlbQty"
+                      title=""
+                      id="avlbQty"
+                      placeholder=""
+                      defaultValue={inventoryDetail.avlbQty}
+                      ref={(el) => (checkRef.current[0] = el)}
+                      readOnly
+                      required
+                    />
+                  )}
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>
+                  <label htmlFor="allocQty">할당수량</label>
+                </dt>
+                <dd>
+                  {/* 등록 일때 변경 가능 */}
+                  {modeInfo.mode === CODE.MODE_CREATE && (
+                    <>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="allocQty"
+                        title=""
+                        id="allocQty"
+                        placeholder=""
+                        defaultValue={inventoryDetail.allocQty}
+                        onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            allocQty: e.target.value,
+                          })
+                        }
+                        ref={(el) => (checkRef.current[0] = el)}
+                        required
+                      />
+                    </>
+                  )}
+                  {/* 수정/조회 일때 변경 불가 */}
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+                    <input
+                      className="f_input2 w_full"
+                      type="text"
+                      name="allocQty"
+                      title=""
+                      id="allocQty"
+                      placeholder=""
+                      defaultValue={inventoryDetail.allocQty}
+                      ref={(el) => (checkRef.current[0] = el)}
+                      readOnly
+                      required
+                    />
+                  )}
+                </dd>
+              </dl>
+
+              <dl>
+                <dt>
+                  <label htmlFor="hldQty">보류수량</label>
+                </dt>
+                <dd>
+                  {/* 등록 일때 변경 가능 */}
+                  {modeInfo.mode === CODE.MODE_CREATE && (
+                    <>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="hldQty"
+                        title=""
+                        id="hldQty"
+                        placeholder=""
+                        defaultValue={inventoryDetail.hldQty}
+                        onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            hldQty: e.target.value,
+                          })
+                        }
+                        ref={(el) => (checkRef.current[0] = el)}
+                        required
+                      />
+                    </>
+                  )}
+                  {/* 수정/조회 일때 변경 불가 */}
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+                    <input
+                      className="f_input2 w_full"
+                      type="text"
+                      name="hldQty"
+                      title=""
+                      id="hldQty"
+                      placeholder=""
+                      defaultValue={inventoryDetail.hldQty}
+                      ref={(el) => (checkRef.current[0] = el)}
+                      readOnly
+                      required
+                    />
+                  )}
+                </dd>
+              </dl>
+
               {/* <!-- 버튼영역 --> */}
               <div className="board_btn_area">
                 <div className="left_col btn1">
