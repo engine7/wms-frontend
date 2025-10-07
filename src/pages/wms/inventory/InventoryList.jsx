@@ -81,7 +81,9 @@ function InventoryList(props) {
               <Link
                 to={{ pathname: URL.WMS_INVENTORY_MODIFY }}
                 state={{
-                  uniqId: item.uniqId,
+                  uniqId: item.whCd,
+                  uniqId: item.lotNo,
+                  uniqId: item.cellNo,
                   searchCondition: searchCondition,
                 }}
                 key={listIdx}
