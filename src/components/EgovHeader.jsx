@@ -84,7 +84,7 @@ function EgovHeader() {
         <div className="gnb">
           <h2 className="blind">주메뉴</h2>
           <ul>
-            <li>
+            {/* <li>
               <NavLink
                 to={URL.ABOUT}
                 className={({ isActive }) => (isActive ? "cur" : "")}
@@ -107,15 +107,19 @@ function EgovHeader() {
               >
                 고객지원
               </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to={URL.INFORM}
-                className={({ isActive }) => (isActive ? "cur" : "")}
-              >
-                알림마당
-              </NavLink>
-            </li>
+            </li> */}
+
+            {sessionUserSe === "ADM" && (
+              <li>
+                <NavLink
+                  to={URL.INFORM}
+                  className={({ isActive }) => (isActive ? "cur" : "")}
+                >
+                  알림마당
+                </NavLink>
+              </li>
+            )}
+
             {sessionUserSe === "ADM" && (
               <li>
                 <NavLink
@@ -126,6 +130,18 @@ function EgovHeader() {
                 </NavLink>
               </li>
             )}
+
+            {sessionUserSe === "ADM" && (
+              <li>
+                <NavLink
+                  to={URL.WMS}
+                  className={({ isActive }) => (isActive ? "cur" : "")}
+                >
+                  WMS
+                </NavLink>
+              </li>
+            )}
+
           </ul>
         </div>
 
