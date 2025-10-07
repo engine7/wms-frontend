@@ -75,6 +75,10 @@ import EgovAdminMemberEdit from "@/pages/admin/members/EgovAdminMemberEdit";
 import EgovMypageEdit from "@/pages/mypage/EgovMypageEdit";
 import initPage from "@/js/ui";
 
+//WMS 기능 추가
+import InventoryList from "@/pages/wms/inventory/InventoryList";
+import InventoryEdit from "@/pages/wms/inventory/InventoryEdit";
+
 const RootRoutes = () => {
   //useLocation객체를 이용하여 정규표현식을 사용한 /admin/~ 으로 시작하는 경로와 비교에 사용(아래 1줄) */}
   const location = useLocation();
@@ -434,6 +438,23 @@ const SecondRoutes = () => {
           path={URL.MYPAGE_MODIFY}
           element={<EgovMypageEdit mode={CODE.MODE_MODIFY} />}
         />
+
+        {/* WMS */}
+        <Route
+          path={URL.WMS}
+          element={<Navigate to={URL.WMS_INVENTORY} replace />}
+        />
+
+        <Route path={URL.WMS_INVENTORY} element={<InventoryList />} />
+        <Route
+            path={URL.WMS_INVENTORY_CREATE}
+        element={<InventoryEdit mode={CODE.MODE_CREATE} />}
+        />
+        <Route
+        path={URL.WMS_INVENTORY_MODIFY}
+        element={<InventoryEdit mode={CODE.MODE_MODIFY} />}
+        />
+
       </Routes>
 
       <EgovFooter />
