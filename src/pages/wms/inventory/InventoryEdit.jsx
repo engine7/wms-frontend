@@ -18,7 +18,18 @@ function InventoryEdit(props) {
   const checkRef = useRef([]);
 
   console.log("InventoryEdit [location] : ", location);
-  
+  const uniqId = location.state?.uniqId || "";
+  const mberSttusRadioGroup = [
+    { value: "P", label: "가능" },
+    { value: "A", label: "대기" },
+    { value: "D", label: "탈퇴" },
+  ];
+  //const groupCodeOptions = [{ value: "GROUP_00000000000000", label: "ROLE_ADMIN" }, { value: "GROUP_00000000000001", label: "ROLE_USER" }];
+  //백엔드에서 보내온 값으로 변경(위 1줄 대신 아래 1줄 추가)
+  let [groupCodeOptions, setGroupCodeOptions] = useState([]);
+  const [modeInfo, setModeInfo] = useState({ mode: props.mode });
+  const [inventoryDetail, setInventoryDetail] = useState({});
+
   const initMode = () => {
     switch (props.mode) {
       case CODE.MODE_CREATE:
@@ -45,6 +56,13 @@ function InventoryEdit(props) {
   const retrieveDetail = () => {
     let retrieveDetailURL = "";
     if (modeInfo.mode === CODE.MODE_CREATE) {
+      // 조회/등록이면 초기값 지정
+      setInventoryDetail({
+        tmplatId: "TMPLAT_MEMBER_DEFAULT", //Template 고정
+        groupId: "GROUP_00000000000001", //그룹ID 초기값
+        mberSttus: "P", //로그인가능여부 초기값
+        checkIdResult: "중복ID를 체크해 주세요.",
+      });
       retrieveDetailURL = `/inventory/insert`;
     }
     if (modeInfo.mode === CODE.MODE_MODIFY) {
@@ -60,7 +78,7 @@ function InventoryEdit(props) {
     EgovNet.requestFetch(retrieveDetailURL, requestOptions, function (resp) {
       // 수정모드일 경우 조회값 세팅
       if (modeInfo.mode === CODE.MODE_MODIFY) {
-        setMemberDetail(resp.result.mberManageVO);
+        setInventoryDetail(resp.result.mberManageVO);
       }
       groupCodeOptions = []; //중복 option 값 제거
       //백엔드에서 받은 권한 그룹 options 값 바인딩(아래)
@@ -90,14 +108,14 @@ function InventoryEdit(props) {
           Number(resp.resultCode) === Number(CODE.RCV_SUCCESS) &&
           resp.result.usedCnt > 0
         ) {
-          setMemberDetail({
+          setInventoryDetail({
             ...memberDetail,
             checkIdResult: "이미 사용중인 아이디입니다. [ID체크]",
             mberId: checkId,
           });
           resolve(resp.result.usedCnt);
         } else {
-          setMemberDetail({
+          setInventoryDetail({
             ...memberDetail,
             checkIdResult: "사용 가능한 아이디입니다.",
             mberId: checkId,
@@ -278,11 +296,11 @@ function InventoryEdit(props) {
             {/* <!-- 본문 --> */}
 
             <div className="top_tit">
-              <h1 className="tit_1">사이트관리</h1>
+              <h1 className="tit_1">WMS</h1>
             </div>
 
             {modeInfo.mode === CODE.MODE_CREATE && (
-              <h2 className="tit_2">회원 생성</h2>
+              <h2 className="tit_2">재고 생성</h2>
             )}
 
             {modeInfo.mode === CODE.MODE_MODIFY && (
@@ -292,7 +310,7 @@ function InventoryEdit(props) {
             <div className="board_view2">
               <dl>
                 <dt>
-                  <label htmlFor="mberId">회원ID</label>
+                  <label htmlFor="whCd">창고코드</label>
                   <span className="req">필수</span>
                 </dt>
                 <dd>
@@ -306,24 +324,16 @@ function InventoryEdit(props) {
                         title=""
                         id="mberId"
                         placeholder=""
-                        defaultValue={memberDetail.mberId}
+                        defaultValue={inventoryDetail.whCd}
                         onChange={(e) =>
-                          setMemberDetail({
-                            ...memberDetail,
-                            mberId: e.target.value,
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            whCd: e.target.value,
                           })
                         }
                         ref={(el) => (checkRef.current[0] = el)}
                         required
                       />
-                      <button
-                        className="btn btn_skyblue_h46"
-                        onClick={() => {
-                          checkIdDplct();
-                        }}
-                      >
-                        {memberDetail.checkIdResult}
-                      </button>
                     </>
                   )}
                   {/* 수정/조회 일때 변경 불가 */}
@@ -331,11 +341,11 @@ function InventoryEdit(props) {
                     <input
                       className="f_input2 w_full"
                       type="text"
-                      name="mberId"
+                      name="whCd"
                       title=""
-                      id="mberId"
+                      id="whCd"
                       placeholder=""
-                      defaultValue={memberDetail.mberId}
+                      defaultValue={inventoryDetail.whCd}
                       ref={(el) => (checkRef.current[0] = el)}
                       readOnly
                       required
@@ -343,120 +353,96 @@ function InventoryEdit(props) {
                   )}
                 </dd>
               </dl>
+
               <dl>
                 <dt>
-                  <label htmlFor="password">회원암호</label>
+                  <label htmlFor="lotNo">LOT번호</label>
                   <span className="req">필수</span>
                 </dt>
                 <dd>
                   {/* 등록 일때 변경 가능 */}
                   {modeInfo.mode === CODE.MODE_CREATE && (
-                    <input
-                      className="f_input2 w_full"
-                      type="password"
-                      name="password"
-                      title=""
-                      id="password"
-                      placeholder=""
-                      defaultValue={memberDetail.password}
-                      onChange={(e) =>
-                        setMemberDetail({
-                          ...memberDetail,
-                          password: e.target.value,
-                        })
-                      }
-                      ref={(el) => (checkRef.current[1] = el)}
-                      required
-                    />
+                    <>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="lotNo"
+                        title=""
+                        id="lotNo"
+                        placeholder=""
+                        defaultValue={inventoryDetail.lotNo}
+                        onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            lotNo: e.target.value,
+                          })
+                        }
+                        ref={(el) => (checkRef.current[0] = el)}
+                        required
+                      />
+                    </>
                   )}
-                  {/* 수정/조회 일때 */}
+                  {/* 수정/조회 일때 변경 불가 */}
                   {modeInfo.mode === CODE.MODE_MODIFY && (
                     <input
                       className="f_input2 w_full"
-                      type="password"
-                      name="password"
+                      type="text"
+                      name="lotNo"
                       title=""
-                      id="password"
-                      placeholder="빈값이면 기존 암호가 변경되지 않고 그대로 유지됩니다."
-                      defaultValue=""
-                      onChange={(e) =>
-                        setMemberDetail({
-                          ...memberDetail,
-                          password: e.target.value,
-                        })
-                      }
-                      ref={(el) => (checkRef.current[1] = el)}
+                      id="lotNo"
+                      placeholder=""
+                      defaultValue={inventoryDetail.lotNo}
+                      ref={(el) => (checkRef.current[0] = el)}
+                      readOnly
+                      required
                     />
                   )}
                 </dd>
               </dl>
+
               <dl>
                 <dt>
-                  <label htmlFor="bbsNm">회원명</label>
+                  <label htmlFor="cellNo">셀번호</label>
                   <span className="req">필수</span>
                 </dt>
                 <dd>
-                  <input
-                    className="f_input2 w_full"
-                    type="text"
-                    name="mberNm"
-                    title=""
-                    id="mberNm"
-                    placeholder=""
-                    defaultValue={memberDetail.mberNm}
-                    onChange={(e) =>
-                      setMemberDetail({
-                        ...memberDetail,
-                        mberNm: e.target.value,
-                      })
-                    }
-                    ref={(el) => (checkRef.current[2] = el)}
-                    required
-                  />
-                </dd>
-              </dl>
-              <dl>
-                <dt>
-                  회원 권한<span className="req">필수</span>
-                </dt>
-                <dd>
-                  <label className="f_select w_200" htmlFor="groupId">
-                    <select
-                      id="groupId"
-                      name="groupId"
-                      title="회원권한유형선택"
-                      onChange={(e) =>
-                        setMemberDetail({
-                          ...memberDetail,
-                          groupId: e.target.value,
-                        })
-                      }
-                      value={memberDetail.groupId}
-                    >
-                      {groupCodeOptions.map((option) => {
-                        return (
-                          <option value={option.value} key={option.value}>
-                            {option.label}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </label>
-                </dd>
-              </dl>
-              <dl>
-                <dt>
-                  회원상태<span className="req">필수</span>
-                </dt>
-                <dd>
-                  <EgovRadioButtonGroup
-                    name="mberSttus"
-                    radioGroup={mberSttusRadioGroup}
-                    setValue={memberDetail.mberSttus}
-                    setter={(v) =>
-                      setMemberDetail({ ...memberDetail, mberSttus: v })
-                    }
-                  />
+                  {/* 등록 일때 변경 가능 */}
+                  {modeInfo.mode === CODE.MODE_CREATE && (
+                    <>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="cellNo"
+                        title=""
+                        id="cellNo"
+                        placeholder=""
+                        defaultValue={inventoryDetail.cellNo}
+                        onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            cellNo: e.target.value,
+                          })
+                        }
+                        ref={(el) => (checkRef.current[0] = el)}
+                        required
+                      />
+                    </>
+                  )}
+                  {/* 수정/조회 일때 변경 불가 */}
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+                    <input
+                      className="f_input2 w_full"
+                      type="text"
+                      name="cellNo"
+                      title=""
+                      id="cellNo"
+                      placeholder=""
+                      defaultValue={inventoryDetail.cellNo}
+                      ref={(el) => (checkRef.current[0] = el)}
+                      readOnly
+                      required
+                    />
+                  )}
                 </dd>
               </dl>
 
