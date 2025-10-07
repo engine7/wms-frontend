@@ -91,12 +91,27 @@ function InventoryEdit(props) {
 
   const checkIdDplct = () => {
     return new Promise((resolve) => {
-      let checkId = memberDetail["mberId"];
-      if (checkId === null || checkId === undefined) {
-        alert("회원ID를 입력해 주세요");
+      let checkId = inventoryDetail["whCd"] + ',' + inventoryDetail["lotNo"] + ',' + inventoryDetail["cellNo"];
+
+      let whCd = inventoryDetail["whCd"];
+      if (whCd === null || whCd === undefined) {
+        alert("창고코드를 입력해 주세요");
         return false;
       }
-      const checkIdURL = `/etc/member_checkid/${checkId}`;
+
+      let lotNo = inventoryDetail["lotNo"];
+      if (lotNo === null || lotNo === undefined) {
+        alert("로트번호를 입력해 주세요");
+        return false;
+      }
+
+      let cellNo = inventoryDetail["cellNo"];
+      if (cellNo === null || cellNo === undefined) {
+        alert("셀번호를 입력해 주세요");
+        return false;
+      }
+
+      const checkIdURL = `/etc/inventory_checkid/${whCd}/${lotNo}/${cellNo}`;
       const reqOptions = {
         method: "GET",
         headers: {
@@ -109,16 +124,16 @@ function InventoryEdit(props) {
           resp.result.usedCnt > 0
         ) {
           setInventoryDetail({
-            ...memberDetail,
+            ...inventoryDetail,
             checkIdResult: "이미 사용중인 아이디입니다. [ID체크]",
-            mberId: checkId,
+            checkId: checkId,
           });
           resolve(resp.result.usedCnt);
         } else {
           setInventoryDetail({
-            ...memberDetail,
+            ...inventoryDetail,
             checkIdResult: "사용 가능한 아이디입니다.",
-            mberId: checkId,
+            checkId: checkId,
           });
           resolve(0);
         }
@@ -128,39 +143,39 @@ function InventoryEdit(props) {
 
   const formValidator = (formData) => {
     return new Promise((resolve) => {
-      if (formData.get("mberId") === null || formData.get("mberId") === "") {
-        alert("회원ID는 필수 값입니다.");
+      if (formData.get("whCd") === null || formData.get("whCd") === "") {
+        alert("창고코드는 필수 값입니다.");
         return false;
       }
       checkIdDplct().then((res) => {
         if (res > 0) {
           return false;
         }
-        if (
-          formData.get("password") === null ||
-          formData.get("password") === ""
-        ) {
-          alert("암호는 필수 값입니다.");
-          return false;
-        }
-        if (formData.get("mberNm") === null || formData.get("mberNm") === "") {
-          alert("회원명은 필수 값입니다.");
-          return false;
-        }
-        if (
-          formData.get("groupId") === null ||
-          formData.get("groupId") === ""
-        ) {
-          alert("권한 그룹은 필수 값입니다.");
-          return false;
-        }
-        if (
-          formData.get("mberSttus") === null ||
-          formData.get("mberSttus") === ""
-        ) {
-          alert("회원상태값은 필수 값입니다.");
-          return false;
-        }
+        // if (
+        //   formData.get("password") === null ||
+        //   formData.get("password") === ""
+        // ) {
+        //   alert("암호는 필수 값입니다.");
+        //   return false;
+        // }
+        // if (formData.get("mberNm") === null || formData.get("mberNm") === "") {
+        //   alert("회원명은 필수 값입니다.");
+        //   return false;
+        // }
+        // if (
+        //   formData.get("groupId") === null ||
+        //   formData.get("groupId") === ""
+        // ) {
+        //   alert("권한 그룹은 필수 값입니다.");
+        //   return false;
+        // }
+        // if (
+        //   formData.get("mberSttus") === null ||
+        //   formData.get("mberSttus") === ""
+        // ) {
+        //   alert("회원상태값은 필수 값입니다.");
+        //   return false;
+        // }
         resolve(true);
       });
     });
@@ -181,7 +196,7 @@ function InventoryEdit(props) {
     return true;
   };
 
-  const updateMember = () => {
+  const updateInventory = () => {
     let modeStr = modeInfo.mode === CODE.MODE_CREATE ? "POST" : "PUT";
 
     let requestOptions = {};
@@ -189,8 +204,8 @@ function InventoryEdit(props) {
     if (modeStr === "POST") {
       const formData = new FormData();
 
-      for (let key in memberDetail) {
-        formData.append(key, memberDetail[key]);
+      for (let key in inventoryDetail) {
+        formData.append(key, inventoryDetail[key]);
         //console.log("boardDetail [%s] ", key, boardDetail[key]);
       }
 
@@ -204,8 +219,8 @@ function InventoryEdit(props) {
 
           EgovNet.requestFetch(modeInfo.editURL, requestOptions, (resp) => {
             if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
-              alert("회원 정보가 등록되었습니다.");
-              navigate({ pathname: URL.ADMIN_MEMBERS });
+              alert("재고 정보가 등록되었습니다.");
+              navigate({ pathname: URL.WMS_INVENTORY });
             } else {
               navigate(
                 { pathname: URL.ERROR },
@@ -451,7 +466,7 @@ function InventoryEdit(props) {
                 <div className="left_col btn1">
                   <button
                     className="btn btn_skyblue_h46 w_100"
-                    onClick={() => updateMember()}
+                    onClick={() => updateInventory()}
                   >
                     저장
                   </button>
