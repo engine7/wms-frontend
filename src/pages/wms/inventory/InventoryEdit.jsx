@@ -254,6 +254,74 @@ function InventoryEdit(props) {
     }
   };
 
+  const updateInventoryMap = () => {
+    let modeStr = modeInfo.mode === CODE.MODE_CREATE ? "POST" : "PUT";
+
+    let requestOptions = {};
+
+    if (modeStr === "POST") {
+      const formData = new FormData();
+
+      for (let key in inventoryDetail) {
+        formData.append(key, inventoryDetail[key]);
+        //console.log("boardDetail [%s] ", key, boardDetail[key]);
+      }
+
+      // ✅ FormData → JSON 변환
+      const jsonObj = {};
+      formData.forEach((value, key) => {
+        jsonObj[key] = value;
+      });
+
+      modeInfo.editURL = "/inventoryMap/insert";  /* (맵) */
+
+      formValidator(formData).then((res) => {
+        if (res) {
+          requestOptions = {
+            method: modeStr,
+            headers: {
+              "Content-Type": "application/json", // ✅ JSON 명시
+            },
+            body: JSON.stringify(jsonObj), // ✅ JSON으로 보냄
+          };
+
+          EgovNet.requestFetch(modeInfo.editURL, requestOptions, (resp) => {
+            if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
+              alert("재고 정보가 등록되었습니다.");
+              navigate({ pathname: URL.WMS_INVENTORY });
+            } else {
+              navigate(
+                { pathname: URL.ERROR },
+                { state: { msg: resp.resultMessage } }
+              );
+            }
+          });
+        }
+      });
+    } else {
+      if (formObjValidator(checkRef)) {
+        requestOptions = {
+          method: modeStr,
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({ ...memberDetail }),
+        };
+
+        EgovNet.requestFetch(modeInfo.editURL, requestOptions, (resp) => {
+          if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
+            navigate({ pathname: URL.ADMIN_MEMBERS });
+          } else {
+            navigate(
+              { pathname: URL.ERROR },
+              { state: { msg: resp.resultMessage } }
+            );
+          }
+        });
+      }
+    }
+  };
+
   const deleteMember = (uniqId) => {
     const deleteMemberURL = `/inventory/delete/${uniqId}`;
 
@@ -651,6 +719,14 @@ function InventoryEdit(props) {
                   >
                     저장
                   </button>
+
+                  <button
+                    className="btn btn_skyblue_h46 w_100"
+                    onClick={() => updateInventoryMap()}
+                  >
+                    저장 (맵)
+                  </button>
+
                   {modeInfo.mode === CODE.MODE_MODIFY && (
                     <button
                       className="btn btn_skyblue_h46 w_100"
