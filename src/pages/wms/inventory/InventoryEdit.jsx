@@ -349,8 +349,8 @@ function InventoryEdit(props) {
     }
   };
 
-  const deleteMember = (uniqId) => {
-    const deleteMemberURL = `/inventory/delete/${uniqId}`;
+  const deleteInventory = (whCd, lotNo, cellNo) => {
+    const deleteInventoryURL = `/inventory/delete/${whCd}/${lotNo}/${cellNo}`;
 
     const requestOptions = {
       method: "DELETE",
@@ -359,11 +359,11 @@ function InventoryEdit(props) {
       },
     };
 
-    EgovNet.requestFetch(deleteMemberURL, requestOptions, (resp) => {
-      console.log("====>>> member delete= ", resp);
+    EgovNet.requestFetch(deleteInventoryURL, requestOptions, (resp) => {
+      console.log("====>>> inventory delete= ", resp);
       if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
-        alert("회원이 삭제되었습니다.");
-        navigate(URL.ADMIN_MEMBERS, { replace: true });
+        alert("재고가 삭제되었습니다.");
+        navigate(URL.WMS_INVENTORY, { replace: true });
       } else {
         alert("ERR : " + resp.resultMessage);
       }
@@ -786,7 +786,7 @@ function InventoryEdit(props) {
                     <button
                       className="btn btn_skyblue_h46 w_100"
                       onClick={() => {
-                        deleteMember(memberDetail.uniqId);
+                        deleteInventory(inventoryDetail.whCd, inventoryDetail.lotNo, inventoryDetail.cellNo);
                       }}
                     >
                       삭제
