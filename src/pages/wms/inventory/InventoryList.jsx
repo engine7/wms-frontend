@@ -38,7 +38,8 @@ function InventoryList(props) {
     (srchCnd) => {
       console.groupCollapsed("InventoryList.retrieveList()");
 
-      const retrieveListURL = "/inventory" + EgovNet.getQueryString(srchCnd);
+      // const retrieveListURL = "/inventory" + EgovNet.getQueryString(srchCnd);
+      const retrieveListURL = "/inventoryMap" + EgovNet.getQueryString(srchCnd); /* (Map) */
 
       const requestOptions = {
         method: "GET",
