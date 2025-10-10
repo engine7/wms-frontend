@@ -7,6 +7,53 @@
 ![vite](https://img.shields.io/badge/vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)  
 ![workflow](https://github.com/eGovFramework/egovframe-template-simple-react/actions/workflows/node.js.yml/badge.svg)
 
+## WMS 구축 시작하기 — 간단 가이드
+
+이 문서는 이 리포지토리를 기반으로 WMS(창고관리시스템) Frontend를 단계적으로 개발하기 위한 온보딩 가이드입니다. 아래의 최소 계획과 초기 작업을 따라 프로젝트를 빠르게 시작할 수 있습니다.
+
+간단한 목표
+- 재고 입/출고, 위치(로케이션) 관리, 입고/출고 지시 및 간단 재고 조회 화면을 제공하는 WMS Frontend 초기 버전 구현
+- 백엔드(REST API)와 분리된 SPA(React + Vite)로 개발하여 향후 마이크로서비스와 연동 가능하도록 구조화
+
+작업 '작은 계약' (Inputs / Outputs / Error modes)
+- 입력: 환경변수에 설정된 백엔드 API 베이스 URL (예: VITE_APP_EGOV_CONTEXT_URL)
+- 출력: 로컬에서 실행되는 개발 서버와 WMS 기본 페이지 스켈레톤
+- 에러 모드: node_modules 미설치, 잘못된 Node 버전, 백엔드 미기동으로 API 호출 실패
+
+즉시 수행할 초기 작업 (첫 30분)
+1. 저장소 복제 및 의존성 설치
+
+```powershell
+npm install
+```
+
+2. 개발 서버 실행 (PowerShell)
+
+```powershell
+npm run dev
+```
+
+3. 코드 구조 빠르게 파악하기
+- 라우터: `src/routes/index.jsx`
+- WMS 관련 페이지: `src/pages/wms/` 폴더 (필요 시 생성)
+- 공통 컴포넌트: `src/components/` (헤더/푸터/폼/테이블 등)
+
+4. 브랜치 규칙(권장)
+- 기능별 브랜치는 `wms/{짧은-이름}` (예: `wms/initial-setup`)
+
+5. 첫 이슈(권장)
+- "프로젝트 로컬 실행 확인" — dev 서버 실행 및 기본 라우트 확인
+- "WMS 라우트 스켈레톤 추가" — `/wms` 경로 및 빈 페이지 컴포넌트 추가
+
+환경 변수 참고
+- 개발 시: `.env.development`에 백엔드 주소 설정
+
+```bash
+VITE_APP_EGOV_CONTEXT_URL=localhost:8080
+```
+
+문제가 생기면 아래의 기존 README 섹션을 참고하세요.
+
 ※ 본 프로젝트는 기존 JSP 뷰 방식에서 벗어나 BackEnd와 FrontEnd를 분리하기 위한 예시 파일로 참고만 하시길 바랍니다.
 
 ## 프로젝트 소개
