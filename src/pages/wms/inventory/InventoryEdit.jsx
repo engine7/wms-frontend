@@ -323,6 +323,9 @@ function InventoryEdit(props) {
         }
       });
     } else {
+
+      modeInfo.editURL = "/inventoryMap/update";  /* (맵) */
+
       if (formObjValidator(checkRef)) {
         requestOptions = {
           method: modeStr,
@@ -334,7 +337,7 @@ function InventoryEdit(props) {
 
         EgovNet.requestFetch(modeInfo.editURL, requestOptions, (resp) => {
           if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
-            navigate({ pathname: URL.ADMIN_MEMBERS });
+            navigate({ pathname: URL.WMS_INVENTORY });
           } else {
             navigate(
               { pathname: URL.ERROR },
