@@ -18,7 +18,11 @@ function InventoryEdit(props) {
   const checkRef = useRef([]);
 
   console.log("InventoryEdit [location] : ", location);
-  const uniqId = location.state?.uniqId || "";
+  
+  const whCd = location.state?.whCd || "";
+  const lotNo = location.state?.lotNo || "";
+  const cellNo = location.state?.cellNo || "";
+
   const mberSttusRadioGroup = [
     { value: "P", label: "가능" },
     { value: "A", label: "대기" },
@@ -67,7 +71,7 @@ function InventoryEdit(props) {
     }
     if (modeInfo.mode === CODE.MODE_MODIFY) {
       // 수정이면 초기값 지정 안함
-      retrieveDetailURL = `/inventory/update/${uniqId}`;
+      retrieveDetailURL = `/inventory/update/${whCd}/${lotNo}/${cellNo}`;
     }
     const requestOptions = {
       method: "GET",
@@ -78,7 +82,7 @@ function InventoryEdit(props) {
     EgovNet.requestFetch(retrieveDetailURL, requestOptions, function (resp) {
       // 수정모드일 경우 조회값 세팅
       if (modeInfo.mode === CODE.MODE_MODIFY) {
-        setInventoryDetail(resp.result.mberManageVO);
+        setInventoryDetail(resp.result.inventoryVO);
       }
       groupCodeOptions = []; //중복 option 값 제거
       //백엔드에서 받은 권한 그룹 options 값 바인딩(아래)
@@ -387,7 +391,7 @@ function InventoryEdit(props) {
             )}
 
             {modeInfo.mode === CODE.MODE_MODIFY && (
-              <h2 className="tit_2">회원 수정</h2>
+              <h2 className="tit_2">재고 수정</h2>
             )}
 
             <div className="board_view2">
