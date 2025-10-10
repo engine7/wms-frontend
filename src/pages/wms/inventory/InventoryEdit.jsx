@@ -187,16 +187,36 @@ function InventoryEdit(props) {
 
   const formObjValidator = (checkRef) => {
     if (checkRef.current[0].value === "") {
-      alert("회원ID는 필수 값입니다.");
+      alert("창고코드는 필수 값입니다.");
       return false;
     }
+    
     if (checkRef.current[1].value === "") {
-      memberDetail.password = ""; //수정 시 암호값을 입력하지 않으면 공백으로처리
-    }
-    if (checkRef.current[2].value === "") {
-      alert("회원명은 필수 값입니다.");
+      alert("LOT번호는 필수 값입니다.");
       return false;
     }
+
+    if (checkRef.current[2].value === "") {
+      alert("셀번호는 필수 값입니다.");
+      return false;
+    }
+
+    if (checkRef.current[3].value === "") {
+      inventoryDetail.invnQty = "0";   //수정 시 재고수량을 입력하지 않으면 공백으로처리
+    }
+
+    if (checkRef.current[4].value === "") {
+      inventoryDetail.avlbQty = "0";   //수정 시 가용수량을 입력하지 않으면 공백으로처리
+    }
+
+    if (checkRef.current[5].value === "") {
+      inventoryDetail.allocQty = "0";  //수정 시 할당수량을 입력하지 않으면 공백으로처리
+    }
+
+    if (checkRef.current[6].value === "") {
+      inventoryDetail.hldQty = "0";    //수정 시 보류수량을 입력하지 않으면 공백으로처리
+    }
+
     return true;
   };
 
@@ -241,12 +261,12 @@ function InventoryEdit(props) {
           headers: {
             "Content-type": "application/json",
           },
-          body: JSON.stringify({ ...memberDetail }),
+          body: JSON.stringify({ ...inventoryDetail }),
         };
 
         EgovNet.requestFetch(modeInfo.editURL, requestOptions, (resp) => {
           if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
-            navigate({ pathname: URL.ADMIN_MEMBERS });
+            navigate({ pathname: URL.WMS_INVENTORY });
           } else {
             navigate(
               { pathname: URL.ERROR },
@@ -309,7 +329,7 @@ function InventoryEdit(props) {
           headers: {
             "Content-type": "application/json",
           },
-          body: JSON.stringify({ ...memberDetail }),
+          body: JSON.stringify({ ...inventoryDetail }),
         };
 
         EgovNet.requestFetch(modeInfo.editURL, requestOptions, (resp) => {
@@ -464,7 +484,7 @@ function InventoryEdit(props) {
                             lotNo: e.target.value,
                           })
                         }
-                        ref={(el) => (checkRef.current[0] = el)}
+                        ref={(el) => (checkRef.current[1] = el)}
                         required
                       />
                     </>
@@ -479,7 +499,7 @@ function InventoryEdit(props) {
                       id="lotNo"
                       placeholder=""
                       defaultValue={inventoryDetail.lotNo}
-                      ref={(el) => (checkRef.current[0] = el)}
+                      ref={(el) => (checkRef.current[1] = el)}
                       readOnly
                       required
                     />
@@ -510,7 +530,7 @@ function InventoryEdit(props) {
                             cellNo: e.target.value,
                           })
                         }
-                        ref={(el) => (checkRef.current[0] = el)}
+                        ref={(el) => (checkRef.current[2] = el)}
                         required
                       />
                     </>
@@ -525,7 +545,7 @@ function InventoryEdit(props) {
                       id="cellNo"
                       placeholder=""
                       defaultValue={inventoryDetail.cellNo}
-                      ref={(el) => (checkRef.current[0] = el)}
+                      ref={(el) => (checkRef.current[2] = el)}
                       readOnly
                       required
                     />
@@ -537,6 +557,7 @@ function InventoryEdit(props) {
               <dl>
                 <dt>
                   <label htmlFor="invnQty">재고수량</label>
+                  <span className="req">필수</span>
                 </dt>
                 <dd>
                   {/* 등록 일때 변경 가능 */}
@@ -556,7 +577,7 @@ function InventoryEdit(props) {
                             invnQty: e.target.value,
                           })
                         }
-                        ref={(el) => (checkRef.current[0] = el)}
+                        ref={(el) => (checkRef.current[3] = el)}
                         required
                       />
                     </>
@@ -571,8 +592,14 @@ function InventoryEdit(props) {
                       id="invnQty"
                       placeholder=""
                       defaultValue={inventoryDetail.invnQty}
-                      ref={(el) => (checkRef.current[0] = el)}
-                      readOnly
+                      onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            invnQty: e.target.value,
+                          })
+                        }
+                      ref={(el) => (checkRef.current[3] = el)}
+                      // readOnly
                       required
                     />
                   )}
@@ -582,6 +609,7 @@ function InventoryEdit(props) {
               <dl>
                 <dt>
                   <label htmlFor="avlbQty">가용수량</label>
+                  <span className="req">필수</span>
                 </dt>
                 <dd>
                   {/* 등록 일때 변경 가능 */}
@@ -601,7 +629,7 @@ function InventoryEdit(props) {
                             avlbQty: e.target.value,
                           })
                         }
-                        ref={(el) => (checkRef.current[0] = el)}
+                        ref={(el) => (checkRef.current[4] = el)}
                         required
                       />
                     </>
@@ -616,8 +644,14 @@ function InventoryEdit(props) {
                       id="avlbQty"
                       placeholder=""
                       defaultValue={inventoryDetail.avlbQty}
-                      ref={(el) => (checkRef.current[0] = el)}
-                      readOnly
+                      onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            avlbQty: e.target.value,
+                          })
+                        }
+                      ref={(el) => (checkRef.current[4] = el)}
+                      // readOnly
                       required
                     />
                   )}
@@ -627,6 +661,7 @@ function InventoryEdit(props) {
               <dl>
                 <dt>
                   <label htmlFor="allocQty">할당수량</label>
+                  <span className="req">필수</span>
                 </dt>
                 <dd>
                   {/* 등록 일때 변경 가능 */}
@@ -646,7 +681,7 @@ function InventoryEdit(props) {
                             allocQty: e.target.value,
                           })
                         }
-                        ref={(el) => (checkRef.current[0] = el)}
+                        ref={(el) => (checkRef.current[5] = el)}
                         required
                       />
                     </>
@@ -661,8 +696,14 @@ function InventoryEdit(props) {
                       id="allocQty"
                       placeholder=""
                       defaultValue={inventoryDetail.allocQty}
-                      ref={(el) => (checkRef.current[0] = el)}
-                      readOnly
+                      onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            allocQty: e.target.value,
+                          })
+                        }
+                      ref={(el) => (checkRef.current[5] = el)}
+                      // readOnly
                       required
                     />
                   )}
@@ -672,6 +713,7 @@ function InventoryEdit(props) {
               <dl>
                 <dt>
                   <label htmlFor="hldQty">보류수량</label>
+                  <span className="req">필수</span>
                 </dt>
                 <dd>
                   {/* 등록 일때 변경 가능 */}
@@ -691,7 +733,7 @@ function InventoryEdit(props) {
                             hldQty: e.target.value,
                           })
                         }
-                        ref={(el) => (checkRef.current[0] = el)}
+                        ref={(el) => (checkRef.current[6] = el)}
                         required
                       />
                     </>
@@ -706,8 +748,14 @@ function InventoryEdit(props) {
                       id="hldQty"
                       placeholder=""
                       defaultValue={inventoryDetail.hldQty}
-                      ref={(el) => (checkRef.current[0] = el)}
-                      readOnly
+                      onChange={(e) =>
+                          setInventoryDetail({
+                            ...inventoryDetail,
+                            hldQty: e.target.value,
+                          })
+                        }
+                      ref={(el) => (checkRef.current[6] = el)}
+                      // readOnly
                       required
                     />
                   )}
