@@ -370,6 +370,28 @@ function InventoryEdit(props) {
     });
   };
 
+  const deleteInventoryMap = () => {
+    const deleteInventoryURL = `/inventoryMap/delete`;
+
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ ...inventoryDetail }),
+    };
+
+    EgovNet.requestFetch(deleteInventoryURL, requestOptions, (resp) => {
+      console.log("====>>> inventory delete= ", resp);
+      if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
+        alert("재고가 삭제되었습니다.");
+        navigate(URL.WMS_INVENTORY, { replace: true });
+      } else {
+        alert("ERR : " + resp.resultMessage);
+      }
+    });
+  };
+
   useEffect(() => {
     initMode();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -792,6 +814,18 @@ function InventoryEdit(props) {
                       삭제
                     </button>
                   )}
+
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+                    <button
+                      className="btn btn_skyblue_h46 w_100"
+                      onClick={() => {
+                        deleteInventoryMap();
+                      }}
+                    >
+                      삭제 (맵)
+                    </button>
+                  )}
+
                 </div>
 
                 <div className="right_col btn1">
