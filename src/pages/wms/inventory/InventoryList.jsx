@@ -117,6 +117,89 @@ function InventoryList(props) {
     [listTag, searchCondition]
   );
 
+  const retrieveMapList = useCallback(
+    (srchCnd) => {
+      console.groupCollapsed("InventoryMapList.retrieveMapList()");
+
+      const retrieveMapListURL = "/inventoryMap" + EgovNet.getQueryString(srchCnd);
+
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      EgovNet.requestFetch(
+        retrieveMapListURL,
+        requestOptions,
+        (resp) => {
+          setPaginationInfo(resp.result.paginationInfo);
+
+          let mutListTag = [];
+          listTag.push(
+            <p className="no_data" key="0">
+              검색된 결과가 없습니다.
+            </p>
+          ); // 목록 초기값
+          const resultCnt = parseInt(
+            resp.result.paginationInfo.totalRecordCount
+          );
+          const currentPageNo = resp.result.paginationInfo.currentPageNo;
+          const pageSize = resp.result.paginationInfo.pageSize;
+          // 리스트 항목 구성
+          resp.result.resultList.forEach(function (item, index) {
+            let authNm = "";
+            resp.result.groupId_result.forEach((data) => {
+              if (data.code === item.groupId) authNm = data.codeNm;
+            });
+            if (index === 0) mutListTag = []; // 목록 초기화
+            const listIdx = itemIdxByPage(
+              resultCnt,
+              currentPageNo,
+              pageSize,
+              index
+            );
+            mutListTag.push(
+              <Link
+                to={{ pathname: URL.WMS_INVENTORY_MODIFY }}
+                state={{
+                  uniqId: item.whCd,
+                  uniqId: item.lotNo,
+                  uniqId: item.cellNo,
+                  searchCondition: searchCondition,
+                }}
+                key={listIdx}
+                className="list_item"
+              >
+                <div>{listIdx}</div>
+                <div>{item.whCd}</div>
+                <div>{item.lotNo}</div>
+                <div>{item.cellNo}</div>
+                <div>{item.invnQty}</div>
+                <div>{item.avlbQty}</div>
+                <div>{item.allocQty}</div>
+                <div>{item.hldQty}</div>
+              </Link>
+            );
+          });
+          if (!mutListTag.length)
+            mutListTag.push(
+              <p className="no_data" key="0">
+                검색된 결과가 없습니다.
+              </p>
+            ); // 회원 목록 초기값
+          setListTag(mutListTag);
+        },
+        function (resp) {
+          console.log("err response : ", resp);
+        }
+      );
+      console.groupEnd("InventoryMapList.retrieveMapList()");
+    },
+    [listTag, searchCondition]
+  );
+
   useEffect(() => {
     retrieveList(searchCondition);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -206,6 +289,21 @@ function InventoryList(props) {
                     >
                       조회
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        retrieveMapList({
+                          ...searchCondition,
+                          pageIndex: 1,
+                          searchCnd: cndRef.current.value,
+                          searchWrd: wrdRef.current.value,
+                        });
+                      }}
+                    >
+                      조회 (맵)
+                    </button>
+
                   </span>
                 </li>
                 <li>
