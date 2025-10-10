@@ -71,7 +71,8 @@ function InventoryEdit(props) {
     }
     if (modeInfo.mode === CODE.MODE_MODIFY) {
       // 수정이면 초기값 지정 안함
-      retrieveDetailURL = `/inventory/update/${whCd}/${lotNo}/${cellNo}`;
+      // retrieveDetailURL = `/inventory/update/${whCd}/${lotNo}/${cellNo}`;
+      retrieveDetailURL = `/inventoryMap/update/${whCd}/${lotNo}/${cellNo}`; /* (Map) */
     }
     const requestOptions = {
       method: "GET",
@@ -830,7 +831,7 @@ function InventoryEdit(props) {
 
                 <div className="right_col btn1">
                   <Link
-                    to={URL.ADMIN_MEMBERS}
+                    to={URL.WMS_INVENTORY}
                     className="btn btn_blue_h46 w_100"
                   >
                     목록
