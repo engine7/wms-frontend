@@ -23,11 +23,18 @@ function InventoryEdit(props) {
   const lotNo = location.state?.lotNo || "";
   const cellNo = location.state?.cellNo || "";
 
-  const mberSttusRadioGroup = [
-    { value: "P", label: "가능" },
-    { value: "A", label: "대기" },
-    { value: "D", label: "탈퇴" },
+  // const mberSttusRadioGroup = [
+  //   { value: "P", label: "가능" },
+  //   { value: "A", label: "대기" },
+  //   { value: "D", label: "탈퇴" },
+  // ];
+  
+  const invnQtyTypeRadioGroup = [
+    { value: "AVLB", label: "가용" },
+    { value: "ALLOC", label: "할당" },
+    { value: "HLD", label: "보류" },
   ];
+
   //const groupCodeOptions = [{ value: "GROUP_00000000000000", label: "ROLE_ADMIN" }, { value: "GROUP_00000000000001", label: "ROLE_USER" }];
   //백엔드에서 보내온 값으로 변경(위 1줄 대신 아래 1줄 추가)
   let [groupCodeOptions, setGroupCodeOptions] = useState([]);
@@ -386,6 +393,28 @@ function InventoryEdit(props) {
       console.log("====>>> inventory delete= ", resp);
       if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
         alert("재고가 삭제되었습니다.");
+        navigate(URL.WMS_INVENTORY, { replace: true });
+      } else {
+        alert("ERR : " + resp.resultMessage);
+      }
+    });
+  };
+
+  const adjustInventoryMap = () => {
+    const adjustInventoryURL = `/module/inventory/adjust`;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ ...inventoryDetail }),
+    };
+
+    EgovNet.requestFetch(adjustInventoryURL, requestOptions, (resp) => {
+      console.log("====>>> inventory adjust= ", resp);
+      if (Number(resp.resultCode) === Number(CODE.RCV_SUCCESS)) {
+        alert("재고가 조정되었습니다.");
         navigate(URL.WMS_INVENTORY, { replace: true });
       } else {
         alert("ERR : " + resp.resultMessage);
@@ -788,6 +817,55 @@ function InventoryEdit(props) {
                 </dd>
               </dl>
 
+              {/* 수정/조회 일때 변경 불가 */}
+              {modeInfo.mode === CODE.MODE_MODIFY && (
+
+                <dl>
+                  <dt>
+                    <label htmlFor="adjustQty">조정수량</label>
+                    {/* <span className="req">필수</span> */}
+                  </dt>
+                  <dd>
+                      <input
+                        className="f_input2 w_full"
+                        type="text"
+                        name="adjustQty"
+                        title=""
+                        id="adjustQty"
+                        placeholder=""
+                        defaultValue={inventoryDetail.adjustQty}
+                        onChange={(e) =>
+                            setInventoryDetail({
+                              ...inventoryDetail,
+                              adjustQty: e.target.value,
+                            })
+                          }
+                        ref={(el) => (checkRef.current[7] = el)}
+                        // readOnly
+                        required
+                      />
+                    
+                  </dd>
+                  
+                  <dt>
+                    조정유형
+                    {/* <span className="req">필수</span> */}
+                  </dt>
+                  <dd>
+                    <EgovRadioButtonGroup
+                      name="invnQtyTypeCd"
+                      radioGroup={invnQtyTypeRadioGroup}
+                      setValue={inventoryDetail.invnQtyTypeCd}
+                      setter={(v) =>
+                        setInventoryDetail({ ...inventoryDetail, invnQtyTypeCd: v })
+                      }
+                    />
+                  </dd>
+
+                </dl>
+
+              )}
+
               {/* <!-- 버튼영역 --> */}
               <div className="board_btn_area">
                 <div className="left_col btn1">
@@ -825,6 +903,19 @@ function InventoryEdit(props) {
                     >
                       삭제 (맵)
                     </button>
+                  )}
+                  
+                  {modeInfo.mode === CODE.MODE_MODIFY && (
+
+                      <button
+                        className="btn btn_skyblue_h46 w_100"
+                        onClick={() => {
+                          adjustInventoryMap();
+                        }}
+                      >
+                        조정 (맵)
+                      </button>
+
                   )}
 
                 </div>
