@@ -15,6 +15,16 @@ function EgovLeftNavWms() {
               재고 &gt; 재고조회
             </NavLink>
           </li>
+
+          <li>
+            <NavLink
+              to={URL.WMS_INVENTORY_TOAST}
+              className={({ isActive }) => (isActive ? "cur" : "")}
+            >
+              재고 &gt; 재고조회 (토스트)
+            </NavLink>
+          </li>
+
         </ul>
       </div>
     </div>

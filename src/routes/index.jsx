@@ -77,6 +77,7 @@ import initPage from "@/js/ui";
 
 //WMS 기능 추가
 import InventoryList from "@/pages/wms/inventory/InventoryList";
+import InventoryListToastGrid from "@/pages/wms/inventory/InventoryListToastGrid";
 import InventoryEdit from "@/pages/wms/inventory/InventoryEdit";
 
 const RootRoutes = () => {
@@ -446,6 +447,8 @@ const SecondRoutes = () => {
         />
 
         <Route path={URL.WMS_INVENTORY} element={<InventoryList />} />
+        <Route path={URL.WMS_INVENTORY_TOAST} element={<InventoryListToastGrid />} />
+
         <Route
             path={URL.WMS_INVENTORY_CREATE}
         element={<InventoryEdit mode={CODE.MODE_CREATE} />}

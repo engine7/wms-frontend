@@ -87,6 +87,7 @@ const URL = {
   // WMS
   WMS: "/wms",
   WMS_INVENTORY: "/wms/inventory", // 재고조회 목록기능
+  WMS_INVENTORY_TOAST: "/wms/inventory/toast", // 재고조회 목록기능 (토스트)
   WMS_INVENTORY_DETAIL: "/wms/inventory/detail", // 재고조회 상세
   WMS_INVENTORY_CREATE: "/wms/inventory/create", // 재고조회 등록
   WMS_INVENTORY_MODIFY: "/wms/inventory/modify", // 재고조회 상세/수정
