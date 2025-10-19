@@ -31,7 +31,9 @@ function InventoryListToastGrid() {
       requestOptions,
       (resp) => {
         setPaginationInfo(resp.result.paginationInfo);
-        const list = Array.isArray(resp.result.resultList) ? resp.result.resultList : [];
+        const list = Array.isArray(resp.result.resultList)
+          ? resp.result.resultList.map((row, idx) => ({ ...row, _rowNo: idx + 1, _delete: false }))
+          : [];
         setGridData(list);
       },
       (err) => console.error("err response : ", err)
@@ -49,6 +51,7 @@ function InventoryListToastGrid() {
       scrollY: true,
       rowHeaders: ["rowNum"],
       columns: [
+        { header: "No", name: "_rowNo", align: "center" },
         { header: "창고코드", name: "whCd", align: "center", editor: "text" },
         { header: "LOT번호", name: "lotNo", align: "center", editor: "text" },
         { header: "셀번호", name: "cellNo", align: "center", editor: "text" },
@@ -56,16 +59,35 @@ function InventoryListToastGrid() {
         { header: "가용수량", name: "avlbQty", align: "right", editor: "text" },
         { header: "할당수량", name: "allocQty", align: "right", editor: "text" },
         { header: "보류수량", name: "hldQty", align: "right", editor: "text" },
+        {
+          header: "삭제",
+          name: "_delete",
+          align: "center",
+          editor: {
+            type: "checkbox",
+          },
+          formatter: ({ value }) => `<input type="checkbox" ${value ? "checked" : ""} />`,
+        },
       ],
       pageOptions: { useClient: true, perPage: 10 },
-      // 추가 및 수정된 데이터만 처리할 수 있도록
       editable: true,
     });
 
+    // 클릭 시 편집 또는 체크박스 처리
     grid.on("click", (ev) => {
-      const rowData = grid.getRow(ev.rowKey);
-      // if (!rowData) return;
-      // window.location.href = `${URL.WMS_INVENTORY_MODIFY}?whCd=${rowData.whCd}&lotNo=${rowData.lotNo}&cellNo=${rowData.cellNo}`;
+      const colName = ev.columnName;
+      const rowKey = ev.rowKey;
+      if (colName === "_delete") {
+        const rowData = grid.getRow(rowKey);
+        rowData._delete = !rowData._delete;
+        grid.setValue(rowKey, "_delete", rowData._delete);
+        // 삭제 체크 시 disable 처리
+        ["whCd","lotNo","cellNo","invnQty","avlbQty","allocQty","hldQty"].forEach((col) => {
+          grid.setEditable(rowKey, col, !rowData._delete);
+        });
+      } else {
+        grid.startEditing(rowKey, colName);
+      }
     });
 
     gridInstanceRef.current = grid;
@@ -83,7 +105,7 @@ function InventoryListToastGrid() {
   /** 추가 버튼 클릭 */
   const handleAddRow = () => {
     if (gridInstanceRef.current) {
-      gridInstanceRef.current.appendRow({
+      const newRow = {
         whCd: "",
         lotNo: "",
         cellNo: "",
@@ -91,7 +113,12 @@ function InventoryListToastGrid() {
         avlbQty: 0,
         allocQty: 0,
         hldQty: 0,
-      });
+        _rowNo: gridInstanceRef.current.getRowCount() + 1,
+        _delete: false,
+      };
+      const rowKey = gridInstanceRef.current.appendRow(newRow);
+      // 새로 추가한 행은 바로 편집
+      gridInstanceRef.current.startEditing(rowKey, "whCd");
     }
   };
 
@@ -99,16 +126,22 @@ function InventoryListToastGrid() {
   const handleSaveRows = () => {
     if (!gridInstanceRef.current) return;
 
-    // ✅ 추가/수정된 행만 가져오기
     const modifiedRows = gridInstanceRef.current.getModifiedRows();
+    let rowsToSave = [];
 
-    if (!modifiedRows.createdRows.length && !modifiedRows.updatedRows.length) {
-      alert("추가/수정된 행이 없습니다.");
+    // 추가된 행
+    modifiedRows.createdRows.forEach((r) => (rowsToSave.push({ ...r, status: "I" })));
+    // 수정된 행
+    modifiedRows.updatedRows.forEach((r) => (rowsToSave.push({ ...r, status: "U" })));
+    // 삭제 체크된 행
+    gridInstanceRef.current.getData().forEach((r) => {
+      if (r._delete) rowsToSave.push({ ...r, status: "D" });
+    });
+
+    if (rowsToSave.length === 0) {
+      alert("추가/수정/삭제된 행이 없습니다.");
       return;
     }
-
-    // 추가된 행 + 수정된 행 합치기
-    const rowsToSave = [...modifiedRows.createdRows, ...modifiedRows.updatedRows];
 
     const requestOptions = {
       method: "POST",
@@ -121,7 +154,7 @@ function InventoryListToastGrid() {
       requestOptions,
       (resp) => {
         alert("저장 완료!");
-        retrieveList(searchCondition); // 저장 후 새로 조회
+        retrieveList(searchCondition);
       },
       (err) => console.error("저장 에러: ", err)
     );
@@ -135,7 +168,6 @@ function InventoryListToastGrid() {
           <div className="contents">
             <h2 className="tit_2">재고조회 (Toast Grid)</h2>
 
-            {/* 검색/버튼 영역 */}
             <div className="condition">
               <ul style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <li>
@@ -176,20 +208,18 @@ function InventoryListToastGrid() {
               </ul>
             </div>
 
-            {/* 토스트 그리드 */}
             <div ref={gridContainerRef} className="mt-4"></div>
 
-            {/* 페이징 */}
             <EgovPaging
               pagination={paginationInfo}
-              moveToPage={(passedPage) => {
+              moveToPage={(passedPage) =>
                 retrieveList({
                   ...searchCondition,
                   pageIndex: passedPage,
                   searchCnd: cndRef.current.value,
                   searchWrd: wrdRef.current.value,
-                });
-              }}
+                })
+              }
             />
           </div>
         </div>
