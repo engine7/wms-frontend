@@ -32,7 +32,10 @@ function InventoryListToastGrid() {
       requestOptions,
       (resp) => {
         setPaginationInfo(resp.result.paginationInfo);
-        setGridData(resp.result.resultList || []);
+        
+        // ✅ resultList가 null/undefined이면 빈 배열로 처리
+        const list = Array.isArray(resp.result.resultList) ? resp.result.resultList : [];
+        setGridData(list);
       },
       (err) => console.error("err response : ", err)
     );
@@ -61,6 +64,8 @@ function InventoryListToastGrid() {
         useClient: true,
         perPage: 10,
       },
+      // ✅ 데이터 없을 때 보여줄 메시지
+      // emptyMessage: "검색된 결과가 없습니다."
     });
 
     grid.on("click", (ev) => {
@@ -74,10 +79,10 @@ function InventoryListToastGrid() {
     return () => grid.destroy();
   }, [retrieveList]);
 
-  /** ✅ 서버 데이터 변경 시 grid 데이터 갱신 */
+  // gridData 변경 시
   useEffect(() => {
-    if (gridInstanceRef.current && gridData.length > 0) {
-      gridInstanceRef.current.resetData(gridData);
+    if (gridInstanceRef.current) {
+      gridInstanceRef.current.resetData(Array.isArray(gridData) ? gridData : []);
     }
   }, [gridData]);
 
