@@ -23,7 +23,7 @@ function InventoryListToastGrid() {
 
   /** 데이터 조회 */
   const retrieveList = useCallback((srchCnd) => {
-    const retrieveListURL = "/inventoryMap" + EgovNet.getQueryString(srchCnd);
+    const retrieveListURL = "/inventoryMapToast" + EgovNet.getQueryString(srchCnd);
     const requestOptions = { method: "GET", headers: { "Content-type": "application/json" } };
 
     EgovNet.requestFetch(
