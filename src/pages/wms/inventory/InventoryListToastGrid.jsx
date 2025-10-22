@@ -23,6 +23,32 @@ function InventoryListToastGrid() {
 
   const [pageSize, setPageSize] = useState(10); // 추가: 페이지 사이즈 상태
 
+  // /pageConfig/selectList 에서 pageSize 읽어오기
+  const fetchDefaultPageSize = useCallback(() => {
+    EgovNet.requestFetch(
+      "/pageConfig/selectList",
+      { method: "GET" },
+      (resp) => {
+        if (Array.isArray(resp)) {
+          const pageSizeConfig = resp.find(
+            (item) => item.configKey === "pageSize" && item.useYn === "Y"
+          );
+          if (pageSizeConfig && !isNaN(Number(pageSizeConfig.configValue))) {
+            setPageSize(Number(pageSizeConfig.configValue));
+          }
+        }
+      },
+      (err) => {
+        console.error("페이지 사이즈 읽기 실패:", err);
+      }
+    );
+  }, []);
+
+  // 최초 마운트 시 기본 페이지 사이즈 조회
+  useEffect(() => {
+    fetchDefaultPageSize();
+  }, [fetchDefaultPageSize]);
+
   /** 데이터 조회 */
   const retrieveList = useCallback((srchCnd) => {
     const retrieveListURL = "/inventoryMapToast" + EgovNet.getQueryString(srchCnd);
@@ -71,7 +97,7 @@ function InventoryListToastGrid() {
           formatter: ({ value }) => `<input type="checkbox" ${value ? "checked" : ""} />`,
         },
       ],
-      pageOptions: { useClient: true, perPage: 10 },
+      pageOptions: { useClient: true, perPage: pageSize },
       editable: true,
     });
 
@@ -95,7 +121,7 @@ function InventoryListToastGrid() {
     gridInstanceRef.current = grid;
 
     return () => grid.destroy();
-  }, [retrieveList]);
+  }, [retrieveList, pageSize]);
 
   /** gridData 변경 시 데이터 갱신 */
   useEffect(() => {
