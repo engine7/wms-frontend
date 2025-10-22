@@ -21,6 +21,8 @@ function InventoryListToastGrid() {
   const cndRef = useRef();
   const wrdRef = useRef();
 
+  const [pageSize, setPageSize] = useState(10); // 추가: 페이지 사이즈 상태
+
   /** 데이터 조회 */
   const retrieveList = useCallback((srchCnd) => {
     const retrieveListURL = "/inventoryMapToast" + EgovNet.getQueryString(srchCnd);
@@ -180,6 +182,24 @@ function InventoryListToastGrid() {
                 <li>
                   <input type="text" ref={wrdRef} placeholder="검색어 입력" />
                 </li>
+                {/* 페이지 사이즈 입력박스 추가 */}
+                <li>
+                  <input
+                    type="number"
+                    min={1}
+                    style={{ width: "80px" }}
+                    value={pageSize}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "" || Number(val) <= 0) {
+                        setPageSize(10);
+                      } else {
+                        setPageSize(Number(val));
+                      }
+                    }}
+                    placeholder="페이지 크기"
+                  />
+                </li>
                 <li>
                   <button
                     type="button"
@@ -189,6 +209,7 @@ function InventoryListToastGrid() {
                         pageIndex: 1,
                         searchCnd: cndRef.current.value,
                         searchWrd: wrdRef.current.value,
+                        pageSize: pageSize,  // 상태값 직접 사용
                       })
                     }
                   >
@@ -218,6 +239,7 @@ function InventoryListToastGrid() {
                   pageIndex: passedPage,
                   searchCnd: cndRef.current.value,
                   searchWrd: wrdRef.current.value,
+                  pageSize: pageSize,  // 상태값 직접 사용
                 })
               }
             />
