@@ -50,8 +50,14 @@ function InventoryListToastGrid() {
   }, [fetchDefaultPageSize]);
 
   /** 데이터 조회 */
-  const retrieveList = useCallback((srchCnd) => {
-    const retrieveListURL = "/inventoryMapToast" + EgovNet.getQueryString(srchCnd);
+  const retrieveList = useCallback((srchCnd = {}) => {
+    // finalCondition: 기존 상태 + 호출 파라미터(우선순위)
+    const finalCond = { ...searchCondition, ...srchCnd, pageSize: (srchCnd.pageSize ?? searchCondition.pageSize ?? pageSize) };
+
+    // 사용자 입력값이 10 초과인 경우 10으로 강제
+    finalCond.pageSize = Math.min(Number(finalCond.pageSize) || 1, 10);
+
+    const retrieveListURL = "/inventoryMapToast" + EgovNet.getQueryString(finalCond);
     const requestOptions = { method: "GET", headers: { "Content-type": "application/json" } };
 
     EgovNet.requestFetch(
@@ -66,7 +72,7 @@ function InventoryListToastGrid() {
       },
       (err) => console.error("err response : ", err)
     );
-  }, []);
+  }, [pageSize, searchCondition]);
 
   /** 초기화 및 Grid 생성 */
   useEffect(() => {
@@ -213,17 +219,21 @@ function InventoryListToastGrid() {
                   <input
                     type="number"
                     min={1}
+                    max={10}
                     style={{ width: "80px" }}
                     value={pageSize}
                     onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "" || Number(val) <= 0) {
-                        setPageSize(10);
-                      } else {
-                        setPageSize(Number(val));
-                      }
+                      const raw = Number(e.target.value) || 1;
+                      // 1 이상, 최대 10으로 제한
+                      const capped = Math.min(Math.max(1, raw), 10);
+                      if (raw > 10) console.warn("페이지 크기는 최대 10으로 제한됩니다.");
+                      setPageSize(capped);
+                      // 페이지 사이즈 변경 시 1페이지로 재조회 (하단 페이지 계산 동기화)
+                      const nextCond = { ...searchCondition, pageIndex: 1, pageSize: capped, searchCnd: cndRef.current?.value, searchWrd: wrdRef.current?.value };
+                      setSearchCondition(nextCond);
+                      retrieveList(nextCond);
                     }}
-                    placeholder="페이지 크기"
+                     placeholder="페이지 크기"
                   />
                 </li>
                 <li>
